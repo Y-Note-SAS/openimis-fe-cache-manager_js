@@ -1,0 +1,8 @@
+{
+    "cache.menu.cachedashboard": "Gestion du cache",
+    "cache.mainMenu":"Cache",
+    "cache.cacheSummaries": "{count} Élements trouvés",
+    "cache.cacheSummaries.key": "Variable",
+    "cache.cacheSummaries.description": "Valeur",
+    "cache.title": "Cache Openimis"
+}
