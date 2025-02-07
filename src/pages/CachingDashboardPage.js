@@ -41,6 +41,8 @@ class CachingDashboardPage extends Component {
             const cache = await caches.open(name);
             console.log(cache);
 
+            //caches.delete(name)
+
             // Get a list of entries. Each item is a Request object
             // for (const request of await cache.keys()) {
             //     // If the request URL matches, add the response to the result
@@ -59,6 +61,7 @@ class CachingDashboardPage extends Component {
         var remSpace = limit - totalUsed;
 
         console.log('remaining storage: ' + remSpace);
+        return remSpace;
     }
 
     initData = () => {
@@ -93,7 +96,6 @@ class CachingDashboardPage extends Component {
 
     render() {
         const { intl, classes } = this.props
-
         var count = this.state.elements.length;
 
         this.getCachedData();
@@ -127,8 +129,6 @@ class CachingDashboardPage extends Component {
                     items={this.state.elements}
                 />
             </div>
-
-
         )
     }
 }
