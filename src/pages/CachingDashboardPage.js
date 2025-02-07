@@ -23,22 +23,46 @@ class CachingDashboardPage extends Component {
     };
 
     _onDelete = (key) => {
+        // Clear all items in local storage
+        //localStorage.clear();
+
+        // Remove all saved data from sessionStorage
+        //sessionStorage.clear();
     };
 
-    _getdata = () => {
+    getCachedData = async () => {
+        // Get a list of all of the caches for this origin
+        const cacheNames = await caches.keys();
+        const result = [];
+        console.log(cacheNames);
 
-        // for (const key of keys) {
-        //     //data.push(key);
-        //     // const isOurCache = key.startsWith("myapp-");
-        //     // if (currentCache === key || !isOurCache) {
-        //     //     continue;
-        //     // }
-        //     // caches.delete(key);
-        // }
+        for (const name of cacheNames) {
+            // Open the cache
+            const cache = await caches.open(name);
+            console.log(cache);
+
+            // Get a list of entries. Each item is a Request object
+            // for (const request of await cache.keys()) {
+            //     // If the request URL matches, add the response to the result
+            //     if (request.url.endsWith('.png')) {
+            //         result.push(await cache.match(request));
+            //     }
+            // }
+        }
+
+        return result;
+    }
+
+    _getRemainingSpace = () => {
+        var limit = 1024 * 1024 * 5; // 5 MB
+        var totalUsed = unescape(encodeURIComponent(JSON.stringify(sessionStorage))).length + unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
+        var remSpace = limit - totalUsed;
+
+        console.log('remaining storage: ' + remSpace);
     }
 
     initData = () => {
-        this._getdata();
+        
         let data = [];
         var localKeys = Object.keys(localStorage);
         var sessionKeys = Object.keys(sessionStorage);
@@ -47,20 +71,19 @@ class CachingDashboardPage extends Component {
         console.log(localStorage)
         console.log(sessionStorage)
 
+        const cacheAvailable = 'caches' in self;
+
+        const cookieArr = document.cookie.split(';');
+        console.log(cookieArr);
+
+
         while (i--) {
-            data.push(localKeys[i]);
+            data.push({ key: localKeys[i], value: localStorage.getItem(localKeys[i]) });
         }
         while (j--) {
-            data.push(sessionKeys[j]);
+            data.push({ key: sessionKeys[j], value: sessionStorage.getItem(sessionKeys[j]) });
         }
-
-        if ('caches' in window) {
-            caches.open('localhost').then(function(cache) {
-                console.log(cache);
-              }).catch(function(error) {
-                // Failed to open cache
-              });
-        }
+        console.log(data)
         return data;
     };
 
@@ -73,6 +96,8 @@ class CachingDashboardPage extends Component {
 
         var count = this.state.elements.length;
 
+        this.getCachedData();
+
         let headers = [
             "cacheSummaries.key",
             "cacheSummaries.description"
@@ -81,10 +106,10 @@ class CachingDashboardPage extends Component {
         let itemFormatters = [
             (i) => (
                 <Grid item xs={4} className={classes.item}>
-                    {i}
+                    {i.key}
                 </Grid>
             ),
-            (i) => <Grid item xs={8} className={classes.item}>{localStorage.getItem(i)}</Grid>,
+            (i) => <Grid item xs={8} className={classes.item}>{i.value}</Grid>,
             (i) => (
                 <IconButton onClick={(e) => this._onDelete(i)}>
                     <DeleteIcon />
