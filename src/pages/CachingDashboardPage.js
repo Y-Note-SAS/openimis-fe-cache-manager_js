@@ -82,17 +82,17 @@ class CachingDashboardPage extends Component {
         this.getCachedData();
 
         let headers = [
-            "cacheSummaries.key",
-            "cacheSummaries.description"
+            "cacheSummaries.model",
+            "cacheSummaries.name"
         ]
 
         let itemFormatters = [
             (i) => (
                 <Grid item xs={4} className={classes.item}>
-                    {i.key}
+                    {i.model}
                 </Grid>
             ),
-            (i) => <Grid item xs={8} className={classes.item}>{i.value}</Grid>
+            (i) => <Grid item xs={8} className={classes.item}>{i.cacheName}</Grid>
         ];
 
         return (

@@ -2,7 +2,7 @@
     "cache.menu.cachedashboard": "Gestion du cache",
     "cache.mainMenu":"Cache",
     "cache.cacheSummaries": "{count} Élements trouvés",
-    "cache.cacheSummaries.key": "Variable",
-    "cache.cacheSummaries.description": "Valeur",
+    "cache.cacheSummaries.model": "Module",
+    "cache.cacheSummaries.name": "Nom",
     "cache.title": "Cache Openimis"
 }
