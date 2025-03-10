@@ -1,8 +1,5 @@
 import {
     parseData,
-    dispatchMutationReq,
-    dispatchMutationResp,
-    dispatchMutationErr,
     pageInfo,
     formatServerError,
     formatGraphQLError,
@@ -13,8 +10,8 @@ function reducer(
         fetchingCaches: false,
         fetchedCaches: false,
         errorCaches: null,
-        caches: null,
-        cachesPageInfo: { totalCount: 0 }
+        caches: [],
+        cachesPageInfo: { totalCount: 0 },
     },
     action
 ) {
@@ -24,24 +21,26 @@ function reducer(
                 ...state,
                 fetchingCaches: true,
                 fetchedCaches: false,
-                caches: null,
-                errorCaches: null
-            }
+                caches: [],
+                errorCaches: null,
+            };
         case "CACHE_CACHES_RESP":
             return {
                 ...state,
                 fetchingCaches: false,
                 fetchedCaches: true,
-                caches: parseData(action.payload.data.cacheInfos),
-                cachesPageInfo: pageInfo(action.payload.data.cacheInfos),
+                caches: parseData(action.payload.data.cacheInfo),
+                cachesPageInfo: pageInfo(action.payload.data.cacheInfo),
                 errorCaches: formatGraphQLError(action.payload)
-            }
+            };
         case "CACHE_CACHES_ERR":
             return {
                 ...state,
                 fetchingCaches: false,
                 errorCaches: formatServerError(action.payload)
-            }
+            };
+        default:
+            return state;
     }
 }
 

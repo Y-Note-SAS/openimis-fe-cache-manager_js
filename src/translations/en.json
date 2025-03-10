@@ -4,5 +4,12 @@
     "cache.cacheSummaries": "{count} Elements Found",
     "cache.cacheSummaries.model": "Module",
     "cache.cacheSummaries.name": "Name",
-    "cache.title": "Cache Openimis"
+    "cache.title": "Cache Openimis",
+    "cache.caches.page.title": "Openimis Caches",
+    "cache.model": "Model",
+    "cache.model.null": "Any",
+    "cache.model.location": "Location",
+    "cache.model.coverage": "Coverage",
+    "cache.model.default": "Default",
+    "cache.cacheSummaries.delete": "Delete Caches"
 }
