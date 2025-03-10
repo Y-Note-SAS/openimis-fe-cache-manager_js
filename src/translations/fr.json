@@ -2,7 +2,14 @@
     "cache.menu.cachedashboard": "Gestion du cache",
     "cache.mainMenu":"Cache",
     "cache.cacheSummaries": "{count} Élements trouvés",
-    "cache.cacheSummaries.key": "Variable",
-    "cache.cacheSummaries.description": "Valeur",
-    "cache.title": "Cache Openimis"
+    "cache.cacheSummaries.model": "Module",
+    "cache.cacheSummaries.name": "Nom",
+    "cache.title": "Cache Openimis",
+    "cache.caches.page.title": "Caches Openimis",
+    "cache.model": "Module",
+    "cache.model.null": "Any",
+    "cache.model.location": "Location",
+    "cache.model.coverage": "Coverage",
+    "cache.model.default": "Default",
+    "cache.cacheSummaries.delete": "Vider le cache"
 }
