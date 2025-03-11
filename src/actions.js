@@ -21,7 +21,7 @@ export function selectModel(module) {
 
 export function clearCaches(model, clientMutationLabel) {
     let mutation = formatMutation(
-        "clearCaches",
+        "clearCache",
         `model: "${model}"`,
         clientMutationLabel,
     );
