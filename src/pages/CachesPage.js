@@ -28,26 +28,13 @@ class CachesPage extends Component {
         };
     }
 
-    canDeleteCaches = (selection) => true;
-
-    deleteCaches = (selection) => {
-
-    };
-
     render() {
-        const { intl, classes } = this.props;
-        let actions = [];
-        actions.push({
-            label: "cacheSummaries.delete",
-            enabled: this.canDeleteCaches,
-            action: this.deleteCaches,
-        });
+        const { intl, classes, filters } = this.props;
         return (
             <div className={classes.page}>
                 <Helmet title={formatMessage(intl, "cache", "caches.page.title")} />
                 <CacheSearcher
                     defaultFilters={this.state.defaultFilters}
-                    actions={actions}
                 />
             </div>
         );

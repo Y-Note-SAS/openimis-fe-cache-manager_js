@@ -30,8 +30,13 @@ class CacheFilter extends Component {
 
     debouncedOnChangeFilter = _debounce(
         this.props.onChangeFilters,
-        this.props.modulesManager.getConf("fe-cache", "debounceTime", 200),
+        this.props.modulesManager.getConf("fe-cache", "debounceTime", 500),
     );
+
+    filterValue = (k) => {
+        const { filters } = this.props;
+        return !!filters && !!filters[k] ? filters[k].value : null;
+    };
 
     render() {
         const { classes, intl, filters, onChangeFilters } = this.props;
@@ -46,7 +51,7 @@ class CacheFilter extends Component {
                                 <Grid item xs={2} className={classes.item}>
                                     <PublishedComponent
                                         pubRef="cache.cacheModelPicker"
-                                        value={filters["model"] && filters["model"]["value"]}
+                                        value={this.filterValue("model")}
                                         withNull={false}
                                         onChange={(v, s) =>
                                             this.debouncedOnChangeFilter([

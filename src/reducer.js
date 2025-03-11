@@ -3,6 +3,9 @@ import {
     pageInfo,
     formatServerError,
     formatGraphQLError,
+    dispatchMutationReq,
+    dispatchMutationResp,
+    dispatchMutationErr,
 } from "@openimis/fe-core";
 
 function reducer(
@@ -12,6 +15,8 @@ function reducer(
         errorCaches: null,
         caches: [],
         cachesPageInfo: { totalCount: 0 },
+        submittingMutation: false,
+        mutation: {},
     },
     action
 ) {
@@ -39,6 +44,12 @@ function reducer(
                 fetchingCaches: false,
                 errorCaches: formatServerError(action.payload)
             };
+        case "CACHE_MUTATION_REQ":
+            return dispatchMutationReq(state, action);
+        case "CACHE_MUTATION_ERR":
+            return dispatchMutationErr(state, action);
+        case "CACHE_DELETE_RESP":
+            return dispatchMutationResp(state, "clearCache", action);
         default:
             return state;
     }

@@ -11,5 +11,9 @@
     "cache.model.location": "Location",
     "cache.model.coverage": "Coverage",
     "cache.model.default": "Default",
-    "cache.cacheSummaries.delete": "Vider le cache"
+    "cache.cacheSummaries.delete": "Vider le cache",
+    "cache.model.deleteDialog.title": "Vider le cache",
+    "cache.model.deleteDialog.message": "Supprimer tous les éléments du module dans le cache",
+    "cache.model.deleteDialog.yes.button": "OUI",
+    "cache.deleteDialig.title": "Suppression du cache {model}"
 }
