@@ -4,12 +4,20 @@ import {
     formatMutation,
 } from "@openimis/fe-core";
 
-export function fetchCaches(filters) {
+export function fetchCache(model) {
     var projections = [
         "model",
         "cacheName"
     ];
-    const payload = formatPageQueryWithCount("cacheInfo", filters, projections);
+    const payload = formatPageQueryWithCount("cacheInfo", [`model:"${model}"`], projections);
+    return graphql(payload, "CACHE_CACHES");
+}
+
+export function fetchCacheAvailable(model) {
+    var projections = [
+        "totalCount",
+    ];
+    const payload = formatPageQueryWithCount(model, null, projections);
     return graphql(payload, "CACHE_CACHES");
 }
 

@@ -3,7 +3,8 @@
     "cache.mainMenu":"Cache",
     "cache.cacheSummaries": "{count} Elements Found",
     "cache.cacheSummaries.model": "Module",
-    "cache.cacheSummaries.name": "Name",
+    "cache.cacheSummaries.elements": "Elements",
+    "cacheSummaries.totalAvailable": "Total Available",
     "cache.title": "Cache Openimis",
     "cache.caches.page.title": "Openimis Caches",
     "cache.model": "Model",
@@ -14,6 +15,7 @@
     "cache.cacheSummaries.delete": "Delete Caches",
     "cache.model.deleteDialog.title": "Clear module cache",
     "cache.model.deleteDialog.message": "Delete all element in cache module",
-    "cache.model.deleteDialog.yes.button": "YES",
-    "cache.deleteDialig.title": "Delete cache {model}"
+    "cache.model.deleteDialog.yes.button": "OK",
+    "cache.deleteDialig.title": "Delete cache {model}",
+    "cache.cacheSummaries.graph": "Ratio"
 }

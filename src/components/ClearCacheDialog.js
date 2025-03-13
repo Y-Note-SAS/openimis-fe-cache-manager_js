@@ -4,7 +4,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@material-ui/core";
 
-import { FormattedMessage } from "@openimis/fe-core";
+import { FormattedMessage, PublishedComponent } from "@openimis/fe-core";
 
 const styles = (theme) => ({
   primaryButton: theme.dialog.primaryButton,
@@ -12,17 +12,24 @@ const styles = (theme) => ({
 });
 
 class ClearCacheDialog extends Component {
+  state = {
+    model: null,
+  };
+
   render() {
-    const { classes, model, onCancel, onConfirm } = this.props;
+    const { classes, onChangeModel, onClick, onCancel, onConfirm } = this.props;
     return (
-      <Dialog open={!!model} onClose={onCancel}>
+      <Dialog open={onClick} onClose={onCancel}>
         <DialogTitle>
           <FormattedMessage module="cache" id={`model.deleteDialog.title`} />
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            <FormattedMessage module="cache" id={`model.deleteDialog.message`} />
-          </DialogContentText>
+          <PublishedComponent
+            pubRef="cache.cacheModelPicker"
+            value={this.state.model}
+            withNull={false}
+            onChange={(v, s) => onChangeModel(v)}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={(e) => onConfirm()} className={classes.primaryButton} autoFocus>

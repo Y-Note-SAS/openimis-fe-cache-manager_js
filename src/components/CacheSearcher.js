@@ -1,124 +1,110 @@
 
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { IconButton, Tooltip } from "@material-ui/core";
-import { Delete as DeleteIcon } from "@material-ui/icons";
 import {
     formatMessageWithValues,
     withModulesManager,
     Searcher,
     formatMessage,
-    journalize
+    journalize,
 } from "@openimis/fe-core";
 
-import { clearCaches, fetchCaches } from "../actions";
-import cacheFilter from "./CacheFilter";
+import { clearCaches, fetchCache, fetchCacheAvailable } from "../actions";
 import ClearCacheDialog from "./ClearCacheDialog";
-
-const CACHE_SEARCHER_CONTRIBUTION_KEY = "cache.CacheSearcher";
+import { CACHE_MODEL } from "../constants";
 
 const styles = theme => ({
     page: theme.page,
 });
 
 class CacheSearcher extends Component {
-
     state = {
-        deletedCacheModel: null,
-        params: {},
-        reset: 0,
-        initialFitlers: this.props.defaultFilters
-    };
-
-    constructor(props) {
-        super(props);
-        this.rowsPerPageOptions = [10, 20, 50, 100];
-        this.defaultPageSize = 20;
+        elements: [],
+        fetchingElements: true,
+        selectedModel: null,
+        openDialog: false
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.submittingMutation && !this.props.submittingMutation) {
             this.props.journalize(this.props.mutation);
-            this.setState({ reset: this.state.reset + 1 });
+            this.setState({ openDialog: false });
+            this.fetch();
         }
     }
 
-    fetch = (params) => {
-        this.setState({ params });
-        this.props.fetchCaches(params);
+    fetch = () => {
+        for (var i = 0; i < CACHE_MODEL.length; i++) {
+            let model = CACHE_MODEL[i];
+            this.props.fetchCache(CACHE_MODEL[i]).then((response) => {
+                let elts = this.state.elements;
+                elts.push({
+                    model: model,
+                    totalCount: response.payload.data.cacheInfo.totalCount,
+                })
+                this.setState({
+                    elements: elts
+                })
+            });
+        }
     };
 
     headers = () => {
         var result = [
             "cacheSummaries.model",
-            "cacheSummaries.name"
+            "cacheSummaries.elements",
+            "cacheSummaries.totalAvailable",
+            "cacheSummaries.graph"
         ];
         return result;
     };
 
-    filtersToQueryParams = (state) => {
-        const prms = Object.keys(state.filters)
-            .filter((contrib) => !!state.filters[contrib].filter)
-            .map((contrib) => state.filters[contrib].filter);
-        return prms;
-    };
-
     clearCaches = () => {
-        const model = this.state.deletedCacheModel;
-        this.setState({ deletedCacheModel: null }, async (e) => {
+        const model = this.state.selectedModel;
+        if (model == null) return null;
+        this.setState({ selectedModel: null }, async (e) => {
             this.props.clearCaches(
                 model,
                 formatMessageWithValues(this.props.intl, "cache", "deleteDialog.title", { model: model }),
-            ).then(() => {
-                let parm = this.filtersToQueryParams(this.state)
-                this.fetch(parm);
-            });
+            )
         });
-    };
-
-    confirmDelete = () => {
-        let filter = this.state.filters || this.props.defaultFilters;
-        this.setState({ deletedCacheModel: filter[`model`][`value`] });
     };
 
     itemFormatters = () => {
         var result = [
             (c) => c.model,
-            (c) => c.cacheName
+            (c) => c.totalCount,
+            (c) => "",
+            (c) => ""
         ]
         return result;
     };
 
-    onFiltersApplied = (filters) => {
-        let filt = [];
-        filt.push(filters.model.filter);
-        this.setState({
-            filters,
-            params: filters.model.filter
-        });
-        this.props.fetchCaches(filt)
-    };
-
-    canDeleteCaches = (selection) => !!this.props.cachesPageInfo && this.props.cachesPageInfo.totalCount != 0;
+    canDeleteCaches = (selection) => true;
 
     deleteCaches = () => {
-        this.confirmDelete();
+        this.setState({ openDialog: true })
     };
+
+    onChangeModel = (model) => {
+        console.log(model)
+        this.setState({ selectedModel: model })
+    }
 
     render() {
         const {
             intl,
-            caches,
-            fetchingCaches,
-            fetchedCaches,
+            classes,
             errorCaches,
-            cachesPageInfo,
-            defaultFilters,
+            fetchingCaches,
+            fetchedCaches
         } = this.props
-        var count = !!cachesPageInfo && cachesPageInfo.totalCount;
+        const { elements, selectedModel } = this.state;
+        let cachesPageInfo = { totalCount: elements.length }
+        let count = elements.length
         let actions = [];
         actions.push({
             label: formatMessage(intl, "cache", "cacheSummaries.delete"),
@@ -129,18 +115,17 @@ class CacheSearcher extends Component {
         return (
             <>
                 <ClearCacheDialog
-                    model={this.state.deletedCacheModel}
+                    onClick={this.state.openDialog}
+                    onChangeModel={this.onChangeModel}
                     onConfirm={this.clearCaches}
-                    onCancel={(e) => this.setState({ deletedCacheModel: null })}
+                    onCancel={(e) => this.setState({ openDialog: false })}
                 />
                 <Searcher
                     module="cache"
                     fetchingItems={fetchingCaches}
                     fetchedItems={fetchedCaches}
                     itemsPageInfo={cachesPageInfo}
-                    items={caches}
-                    FilterPane={cacheFilter}
-                    contributionKey={CACHE_SEARCHER_CONTRIBUTION_KEY}
+                    items={elements}
                     errorItems={errorCaches}
                     tableTitle={formatMessageWithValues(intl, "cache", "cacheSummaries", { count })}
                     rowsPerPageOptions={this.rowsPerPageOptions}
@@ -149,10 +134,7 @@ class CacheSearcher extends Component {
                     itemFormatters={this.itemFormatters}
                     fetch={this.fetch}
                     canFetch={false}
-                    defaultFilters={defaultFilters}
                     actions={actions}
-                    filtersToQueryParams={this.filtersToQueryParams}
-                    onChangeFilters={this.onFiltersApplied}
                 />
             </>
         )
@@ -167,10 +149,11 @@ const mapStateToProps = (state) => ({
     cachesPageInfo: state.cache.cachesPageInfo,
     submittingMutation: state.cache.submittingMutation,
     mutation: state.cache.mutation,
+    totalCacheModel: state.cache.totalCacheModel
 });
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ fetchCaches, clearCaches, journalize }, dispatch);
+    return bindActionCreators({ fetchCache, fetchCacheAvailable, clearCaches, journalize }, dispatch);
 };
 
 export default withModulesManager(
