@@ -12,10 +12,11 @@
     "cache.model.location": "Location",
     "cache.model.coverage": "Coverage",
     "cache.model.default": "Default",
-    "cache.cacheSummaries.delete": "Delete Caches",
+    "cache.deleteDialog.title": "Clear module cache { model }",
     "cache.model.deleteDialog.title": "Clear module cache",
-    "cache.model.deleteDialog.message": "Delete all element in cache module",
-    "cache.model.deleteDialog.yes.button": "OK",
+    "cache.model.deleteDialog.message": "Clear cache module ?",
+    "cache.model.deleteDialog.yes.button": "YES",
     "cache.deleteDialig.title": "Delete cache {model}",
-    "cache.cacheSummaries.graph": "Ratio"
+    "cache.cacheSummaries.graph": "Ratio",
+    "cache.clearCache.tooltip": "Clear cache module"
 }

@@ -1,2 +1,2 @@
 
-export const CACHE_MODEL = ["location", "default", "coverage"];
+export const CACHE_MODEL = ["location"];

@@ -17,6 +17,7 @@ function reducer(
         cachesPageInfo: { totalCount: 0 },
         submittingMutation: false,
         mutation: {},
+        totalCacheModel: {},
     },
     action
 ) {
@@ -43,6 +44,26 @@ function reducer(
                 ...state,
                 fetchingCaches: false,
                 errorCaches: formatServerError(action.payload)
+            };
+        case "CACHE_TOTAL_REQ":
+            return {
+                ...state,
+                fetchingTotal: true,
+                totalCacheModel: {},
+                errorTotal: null,
+            };
+        case "CACHE_TOTAL_RESP":
+            return {
+                ...state,
+                fetchingTotal: false,
+                totalCacheModel: action.payload.data,
+                errorTotal: formatGraphQLError(action.payload)
+            };
+        case "CACHE_TOTAL_ERR":
+            return {
+                ...state,
+                fetchingTotal: false,
+                errorTotal: formatServerError(action.payload)
             };
         case "CACHE_MUTATION_REQ":
             return dispatchMutationReq(state, action);

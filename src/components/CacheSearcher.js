@@ -4,6 +4,8 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { IconButton, Tooltip } from "@material-ui/core";
+import { Delete as DeleteIcon } from "@material-ui/icons";
 import {
     formatMessageWithValues,
     withModulesManager,
@@ -24,15 +26,16 @@ class CacheSearcher extends Component {
     state = {
         elements: [],
         fetchingElements: true,
-        selectedModel: null,
-        openDialog: false
+        deleteModel: null,
+        totalStorage: []
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.submittingMutation && !this.props.submittingMutation) {
             this.props.journalize(this.props.mutation);
-            this.setState({ openDialog: false });
-            this.fetch();
+            this.setState({ elements: [] }, (e) => {
+                this.fetch()
+            });
         }
     }
 
@@ -49,6 +52,7 @@ class CacheSearcher extends Component {
                     elements: elts
                 })
             });
+            this.props.fetchCacheAvailable(CACHE_MODEL[i])
         }
     };
 
@@ -63,9 +67,9 @@ class CacheSearcher extends Component {
     };
 
     clearCaches = () => {
-        const model = this.state.selectedModel;
+        const model = this.state.deleteModel;
         if (model == null) return null;
-        this.setState({ selectedModel: null }, async (e) => {
+        this.setState({ deleteModel: null }, async (e) => {
             this.props.clearCaches(
                 model,
                 formatMessageWithValues(this.props.intl, "cache", "deleteDialog.title", { model: model }),
@@ -73,12 +77,23 @@ class CacheSearcher extends Component {
         });
     };
 
+    confirmDelete = (deletedModel) => {
+        this.setState({ deleteModel: deletedModel });
+    };
+
     itemFormatters = () => {
         var result = [
             (c) => c.model,
             (c) => c.totalCount,
+            (c) => !!this.props.totalCacheModel && !!this.props.totalCacheModel[`${c.model}s`] ? this.props.totalCacheModel[`${c.model}s`][`totalCount`] : 0,
             (c) => "",
-            (c) => ""
+            (c) => (
+                <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
+                    <IconButton onClick={() => this.confirmDelete(c.model)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+            )
         ]
         return result;
     };
@@ -89,11 +104,6 @@ class CacheSearcher extends Component {
         this.setState({ openDialog: true })
     };
 
-    onChangeModel = (model) => {
-        console.log(model)
-        this.setState({ selectedModel: model })
-    }
-
     render() {
         const {
             intl,
@@ -102,23 +112,16 @@ class CacheSearcher extends Component {
             fetchingCaches,
             fetchedCaches
         } = this.props
-        const { elements, selectedModel } = this.state;
+        const { elements, deleteModel } = this.state;
         let cachesPageInfo = { totalCount: elements.length }
         let count = elements.length
-        let actions = [];
-        actions.push({
-            label: formatMessage(intl, "cache", "cacheSummaries.delete"),
-            enabled: this.canDeleteCaches,
-            action: this.deleteCaches,
-        });
 
         return (
             <>
                 <ClearCacheDialog
-                    onClick={this.state.openDialog}
-                    onChangeModel={this.onChangeModel}
+                    model={deleteModel}
                     onConfirm={this.clearCaches}
-                    onCancel={(e) => this.setState({ openDialog: false })}
+                    onCancel={(e) => this.setState({ deleteModel: null })}
                 />
                 <Searcher
                     module="cache"
@@ -134,7 +137,6 @@ class CacheSearcher extends Component {
                     itemFormatters={this.itemFormatters}
                     fetch={this.fetch}
                     canFetch={false}
-                    actions={actions}
                 />
             </>
         )
@@ -142,7 +144,6 @@ class CacheSearcher extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    caches: state.cache.caches,
     fetchingCaches: state.cache.fetchingCaches,
     fetchedCaches: state.cache.fetchedCaches,
     errorCaches: state.cache.errorCaches,

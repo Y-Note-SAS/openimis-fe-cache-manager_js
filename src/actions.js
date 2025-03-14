@@ -1,6 +1,7 @@
 import {
     graphql,
     formatPageQueryWithCount,
+    formatQuery,
     formatMutation,
 } from "@openimis/fe-core";
 
@@ -17,14 +18,8 @@ export function fetchCacheAvailable(model) {
     var projections = [
         "totalCount",
     ];
-    const payload = formatPageQueryWithCount(model, null, projections);
-    return graphql(payload, "CACHE_CACHES");
-}
-
-export function selectModel(module) {
-    return (dispatch) => {
-        dispatch({ type: "CACHE_MODEL_SELECTED", payload: module });
-    };
+    const payload = formatQuery(`${model}s`, null, projections);
+    return graphql(payload, "CACHE_TOTAL");
 }
 
 export function clearCaches(model, clientMutationLabel) {
