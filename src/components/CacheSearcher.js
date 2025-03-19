@@ -14,7 +14,7 @@ import {
     journalize,
 } from "@openimis/fe-core";
 
-import { clearCaches, fetchCache, fetchCacheAvailable } from "../actions";
+import { clearCaches, fetchCaches } from "../actions";
 import ClearCacheDialog from "./ClearCacheDialog";
 import { CACHE_MODEL } from "../constants";
 
@@ -42,17 +42,17 @@ class CacheSearcher extends Component {
     fetch = () => {
         for (var i = 0; i < CACHE_MODEL.length; i++) {
             let model = CACHE_MODEL[i];
-            this.props.fetchCache(CACHE_MODEL[i]).then((response) => {
+            this.props.fetchCaches(CACHE_MODEL[i]).then((response) => {
                 let elts = this.state.elements;
                 elts.push({
                     model: model,
                     totalCount: response.payload.data.cacheInfo.totalCount,
+                    totalAvailable: response.payload.data.cacheInfo.maxItemCount
                 })
                 this.setState({
                     elements: elts
                 })
             });
-            this.props.fetchCacheAvailable(CACHE_MODEL[i])
         }
     };
 
@@ -85,7 +85,7 @@ class CacheSearcher extends Component {
         var result = [
             (c) => c.model,
             (c) => c.totalCount,
-            (c) => !!this.props.totalCacheModel && !!this.props.totalCacheModel[`${c.model}s`] ? this.props.totalCacheModel[`${c.model}s`][`totalCount`] : 0,
+            (c) => c.totalAvailable,
             (c) => "",
             (c) => (
                 <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
@@ -154,7 +154,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ fetchCache, fetchCacheAvailable, clearCaches, journalize }, dispatch);
+    return bindActionCreators({ fetchCaches, clearCaches, journalize }, dispatch);
 };
 
 export default withModulesManager(

@@ -1,25 +1,17 @@
 import {
     graphql,
-    formatPageQueryWithCount,
     formatQuery,
     formatMutation,
 } from "@openimis/fe-core";
 
-export function fetchCache(model) {
+export function fetchCaches(model) {
     var projections = [
-        "model",
-        "cacheName"
-    ];
-    const payload = formatPageQueryWithCount("cacheInfo", [`model:"${model}"`], projections);
-    return graphql(payload, "CACHE_CACHES");
-}
-
-export function fetchCacheAvailable(model) {
-    var projections = [
+        "maxItemCount",
         "totalCount",
+        "edges { node { model cacheName }}",
     ];
-    const payload = formatQuery(`${model}s`, null, projections);
-    return graphql(payload, "CACHE_TOTAL");
+    const payload = formatQuery("cacheInfo", [`model:"${model}"`], projections);
+    return graphql(payload, "CACHE_CACHES");
 }
 
 export function clearCaches(model, clientMutationLabel) {
