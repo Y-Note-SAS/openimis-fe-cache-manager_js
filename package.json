@@ -42,5 +42,11 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "chart.js": "2.9.3",
+    "chartjs-gauge": "0.3.0",
+    "react-chartjs-2": "2.9.0"
+
+  }
 }
