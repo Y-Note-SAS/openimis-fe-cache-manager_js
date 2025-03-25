@@ -125,12 +125,13 @@ class CacheSearcher extends Component {
     itemFormatters = () => {
         var result = [
             (c) => <Grid item xs={4}>{c.model}</Grid>,
-            (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
+            (c) => <Grid item xs={3}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.totalAvailable}</Grid>,
             (c) =>
+                <Grid item xs={4}>
                 <Doughnut
                     height="20px"
-                    width="350px"
+                    width="30px"
                     data={
                         {
                             labels: [
@@ -169,7 +170,7 @@ class CacheSearcher extends Component {
                                 animateScale: true,
                             },
                         }
-                    } />,
+                    } /></Grid>,
             (c) => (
                 <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
                     <IconButton onClick={() => this.confirmDelete(c.model)}>
