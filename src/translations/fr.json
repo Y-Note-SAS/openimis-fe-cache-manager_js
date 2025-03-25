@@ -17,6 +17,7 @@
     "cache.model.deleteDialog.message": "Vider le cache du module ?",
     "cache.model.deleteDialog.yes.button": "OUI",
     "cache.deleteDialig.title": "Suppression du cache {model}",
-    "cache.cacheSummaries.graph": "Ratio",
-    "cache.clearCache.tooltip": "Vider le cache du module"
+    "cache.clearCache.tooltip": "Vider le cache du module",
+    "cache.space.used": "Utilisé",
+    "cache.space.free": "Disponible"
 }

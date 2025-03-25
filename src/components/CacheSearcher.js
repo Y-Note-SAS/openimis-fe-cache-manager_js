@@ -101,7 +101,8 @@ class CacheSearcher extends Component {
             "cacheSummaries.model",
             "cacheSummaries.elements",
             "cacheSummaries.totalAvailable",
-            "cacheSummaries.graph"
+            "",
+            ""
         ];
         return result;
     };
@@ -126,49 +127,49 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={4}>{c.model}</Grid>,
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.totalAvailable}</Grid>,
-            (c) => (
-                <Grid item xs={8}>
-                    <Doughnut
-                        height="20px"
-                        width="200px"
-                        data={
-                            {
-                                labels: ["Used", "Free"],
-                                datasets: [
-                                    {
-                                        data: [c.ratio * 100, 100 - (c.ratio * 100)],
-                                        needleValue: c.ratio * 100,
-                                        backgroundColor: ["lightgreen", "grey"],
-                                        hoverBackgroundColor: ["lightgreen", "grey"],
-                                        borderWidth: 1
-                                    }
-                                ]
-                            }
+            (c) =>
+                <Doughnut
+                    height="20px"
+                    width="350px"
+                    data={
+                        {
+                            labels: [
+                                formatMessage(this.props.intl, "cache", "space.used"), 
+                                formatMessage(this.props.intl, "cache", "space.free")
+                            ],
+                            datasets: [
+                                {
+                                    data: [c.ratio * 100, 100 - (c.ratio * 100)],
+                                    needleValue: c.ratio * 100,
+                                    backgroundColor: ["lightgreen", "grey"],
+                                    hoverBackgroundColor: ["lightgreen", "grey"],
+                                    borderWidth: 1
+                                }
+                            ]
                         }
-                        options={
-                            {
-                                layout: {
-                                    padding: {
-                                        bottom: 3
-                                    }
-                                },
-                                rotation: 1 * Math.PI,
-                                circumference: 1 * Math.PI,
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    enabled: false
-                                },
-                                cutoutPercentage: 70,
-                                animation: {
-                                    animateRotate: true,
-                                    animateScale: true,
-                                },
-                            }
-                        } />
-                </Grid>
-            ),
+                    }
+                    options={
+                        {
+                            layout: {
+                                padding: {
+                                    bottom: 3
+                                }
+                            },
+                            rotation: 1 * Math.PI,
+                            circumference: 1 * Math.PI,
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: false
+                            },
+                            cutoutPercentage: 70,
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true,
+                            },
+                        }
+                    } />,
             (c) => (
                 <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
                     <IconButton onClick={() => this.confirmDelete(c.model)}>
