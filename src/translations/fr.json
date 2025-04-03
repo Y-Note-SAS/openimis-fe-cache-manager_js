@@ -5,6 +5,7 @@
     "cache.cacheSummaries.model": "Module",
     "cache.cacheSummaries.elements": "Elements",
     "cacheSummaries.totalAvailable": "Total disponible",
+    "cacheSummaries.totalUse": "Total Utilisé",
     "cache.title": "Cache Openimis",
     "cache.caches.page.title": "Caches Openimis",
     "cache.model": "Module",
