@@ -26,11 +26,18 @@ const styles = theme => ({
 
 class CacheSearcher extends Component {
     state = {
-        elements: [],
-        fetchingElements: true,
         deleteModel: null,
         totalStorage: []
     }
+    constructor(props) {
+        super(props);
+        this.rowsPerPageOptions = props.modulesManager.getConf(
+          "fe-cacheManager",
+          "cacheSearcher.rowsPerPageOptions",
+          [5, 10, 20],
+        );
+        this.defaultPageSize = props.modulesManager.getConf("fe-cacheManager", "cacheSearcher.defaultPageSize", 10);
+      }
 
     componentDidMount() {
         Chart.pluginService.register({
@@ -66,40 +73,19 @@ class CacheSearcher extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);
-            this.setState({ elements: [] }, (e) => {
-                this.fetch()
-            });
+            this.props.journalize(this.props.mutation);        
+            this.fetch()
         }
     }
-
     fetch = () => {
-        for (var i = 0; i < CACHE_MODEL.length; i++) {
-            let model = CACHE_MODEL[i];
-            this.props.fetchCaches(CACHE_MODEL[i]).then((response) => {
-                let elts = this.state.elements;
-                let totalCount = response.payload.data.cacheInfo.totalCount;
-                let maxItemCount = response.payload.data.cacheInfo.maxItemCount;
-                elts.push({
-                    model: model,
-                    totalCount: response.payload.data.cacheInfo.totalCount,
-                    totalAvailable: response.payload.data.cacheInfo.maxItemCount,
-                    ratio: _.round(
-                        totalCount / maxItemCount,
-                        2,
-                    )
-                })
-                this.setState({
-                    elements: elts
-                })
-            });
-        }
+        this.props.fetchCaches()
     };
+
 
     headers = () => {
         var result = [
-            "cacheSummaries.model",
             "cacheSummaries.elements",
+            "cacheSummaries.totalUse",
             "cacheSummaries.totalAvailable",
             "",
             ""
@@ -124,14 +110,15 @@ class CacheSearcher extends Component {
 
     itemFormatters = () => {
         var result = [
-            (c) => <Grid item xs={4}>{c.model}</Grid>,
-            (c) => <Grid item xs={3}>{c.totalCount}</Grid>,
-            (c) => <Grid item xs={4}>{c.totalAvailable}</Grid>,
+            (c) => <Grid item xs={3}>{c.cacheName}</Grid>,
+            (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
+            (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
-                <Grid item xs={4}>
+                <Grid item xs={5}>
+                {c.maxItemCount > 0 ? (
                 <Doughnut
-                    height="20px"
-                    width="30px"
+                    height="100%"
+                    width="100%"
                     data={
                         {
                             labels: [
@@ -140,8 +127,11 @@ class CacheSearcher extends Component {
                             ],
                             datasets: [
                                 {
-                                    data: [c.ratio * 100, 100 - (c.ratio * 100)],
-                                    needleValue: c.ratio * 100,
+                                    data: [
+                                        (c.totalCount / c.maxItemCount) * 100,
+                                        ((c.maxItemCount - c.totalCount) / c.maxItemCount) * 100
+                                    ],
+                                    needleValue: Math.max(0, c.maxItemCount === 0 ? 0 : (c.totalCount / c.maxItemCount) * 100 - 2),
                                     backgroundColor: ["lightgreen", "grey"],
                                     hoverBackgroundColor: ["lightgreen", "grey"],
                                     borderWidth: 1
@@ -153,6 +143,7 @@ class CacheSearcher extends Component {
                         {
                             layout: {
                                 padding: {
+                                    top: 31,
                                     bottom: 3
                                 }
                             },
@@ -170,10 +161,10 @@ class CacheSearcher extends Component {
                                 animateScale: true,
                             },
                         }
-                    } /></Grid>,
+                    } />) : null }</Grid>,
             (c) => (
                 <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
-                    <IconButton onClick={() => this.confirmDelete(c.model)}>
+                    <IconButton onClick={() => this.confirmDelete(c.cacheName)}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -181,6 +172,7 @@ class CacheSearcher extends Component {
         ]
         return result;
     };
+    rowIdentifier = (r) => r.model;
 
     canDeleteCaches = (selection) => true;
 
@@ -194,11 +186,12 @@ class CacheSearcher extends Component {
             classes,
             errorCaches,
             fetchingCaches,
-            fetchedCaches
+            fetchedCaches,
+            cachesPageInfo,
+            caches
         } = this.props
-        const { elements, deleteModel } = this.state;
-        let cachesPageInfo = { totalCount: elements.length }
-        let count = elements.length
+        const { deleteModel } = this.state;
+        let count = caches.length
 
         return (
             <>
@@ -212,15 +205,15 @@ class CacheSearcher extends Component {
                     fetchingItems={fetchingCaches}
                     fetchedItems={fetchedCaches}
                     itemsPageInfo={cachesPageInfo}
-                    items={elements}
+                    items={caches}
                     errorItems={errorCaches}
                     tableTitle={formatMessageWithValues(intl, "cache", "cacheSummaries", { count })}
-                    rowsPerPageOptions={this.rowsPerPageOptions}
-                    defaultPageSize={this.defaultPageSize}
                     headers={this.headers}
+                    withPagination={false}
                     itemFormatters={this.itemFormatters}
                     fetch={this.fetch}
                     canFetch={false}
+                    rowIdentifier={this.rowIdentifier}
                 />
             </>
         )
@@ -234,6 +227,7 @@ const mapStateToProps = (state) => ({
     cachesPageInfo: state.cache.cachesPageInfo,
     submittingMutation: state.cache.submittingMutation,
     mutation: state.cache.mutation,
+    caches: state.cache.caches,
     totalCacheModel: state.cache.totalCacheModel
 });
 
