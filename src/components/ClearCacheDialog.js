@@ -17,15 +17,25 @@ class ClearCacheDialog extends Component {
   };
 
   render() {
-    const { classes, model, onCancel, onConfirm } = this.props;
+    const { classes, open, onCancel, onConfirm, selections } = this.props;
     return (
-      <Dialog open={!!model} onClose={onCancel}>
+      <Dialog open={open} onClose={onCancel}>
         <DialogTitle>
           <FormattedMessage module="cache" id={`model.deleteDialog.title`} />
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <FormattedMessage module="cache" id={`model.deleteDialog.message`} />
+            <FormattedMessage 
+              module="cache" 
+              id={!!selections && selections.length > 1 
+                ? "cache.model.deleteDialog.messageMutipleCacheName"
+                : "model.deleteDialog.message"
+              }
+              values={!!selections && selections.length > 1 
+                ? { models: selections.join(", ") }
+                : { model: selections }
+              }
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>

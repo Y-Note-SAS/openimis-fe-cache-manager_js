@@ -15,10 +15,12 @@
     "cache.model.default": "Default",
     "cache.deleteDialog.title": "Clear module cache { model }",
     "cache.model.deleteDialog.title": "Clear module cache",
-    "cache.model.deleteDialog.message": "Clear cache module ?",
+    "cache.model.deleteDialog.message": "Are you sure you want to clear the cache for the following item: {model}?",
+    "cache.model.deleteDialog.messageMutipleCacheName": "Are you sure you want to clear the cache for the following items: {models}? ",
     "cache.model.deleteDialog.yes.button": "YES",
     "cache.deleteDialig.title": "Delete cache {model}",
     "cache.clearCache.tooltip": "Clear cache module",
     "cache.space.used": "Used",
-    "cache.space.free": "Free"
+    "cache.space.free": "Free",
+    "cache.clearCache.emptyCache": "Clear cache"
 }

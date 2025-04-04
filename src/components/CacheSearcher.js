@@ -17,7 +17,7 @@ import _ from "lodash";
 import { Chart, Doughnut } from "react-chartjs-2";
 
 import { clearCaches, fetchCaches } from "../actions";
-import ClearCacheDialog from "./ClearCacheDialog";
+
 import { CACHE_MODEL } from "../constants";
 
 const styles = theme => ({
@@ -25,19 +25,15 @@ const styles = theme => ({
 });
 
 class CacheSearcher extends Component {
-    state = {
-        deleteModel: null,
-        totalStorage: []
-    }
+
     constructor(props) {
         super(props);
-        this.rowsPerPageOptions = props.modulesManager.getConf(
-          "fe-cacheManager",
-          "cacheSearcher.rowsPerPageOptions",
-          [5, 10, 20],
-        );
-        this.defaultPageSize = props.modulesManager.getConf("fe-cacheManager", "cacheSearcher.defaultPageSize", 10);
-      }
+
+        this.state = {
+            deleteModel: null,
+            totalStorage: []
+        }
+    }
 
     componentDidMount() {
         Chart.pluginService.register({
@@ -73,7 +69,7 @@ class CacheSearcher extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);        
+            this.props.journalize(this.props.mutation);
             this.fetch()
         }
     }
@@ -87,7 +83,6 @@ class CacheSearcher extends Component {
             "cacheSummaries.elements",
             "cacheSummaries.totalUse",
             "cacheSummaries.totalAvailable",
-            "",
             ""
         ];
         return result;
@@ -104,9 +99,7 @@ class CacheSearcher extends Component {
         });
     };
 
-    confirmDelete = (deletedModel) => {
-        this.setState({ deleteModel: deletedModel });
-    };
+
 
     itemFormatters = () => {
         var result = [
@@ -115,70 +108,65 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
                 <Grid item xs={5}>
-                {c.maxItemCount > 0 ? (
-                <Doughnut
-                    height="100%"
-                    width="100%"
-                    data={
-                        {
-                            labels: [
-                                formatMessage(this.props.intl, "cache", "space.used"), 
-                                formatMessage(this.props.intl, "cache", "space.free")
-                            ],
-                            datasets: [
+                    {c.maxItemCount > 0 ? (
+                        <Doughnut
+                            height="100%"
+                            width="100%"
+                            data={
                                 {
-                                    data: [
-                                        (c.totalCount / c.maxItemCount) * 100,
-                                        ((c.maxItemCount - c.totalCount) / c.maxItemCount) * 100
+                                    labels: [
+                                        formatMessage(this.props.intl, "cache", "space.used"),
+                                        formatMessage(this.props.intl, "cache", "space.free")
                                     ],
-                                    needleValue: Math.max(0, c.maxItemCount === 0 ? 0 : (c.totalCount / c.maxItemCount) * 100 - 2),
-                                    backgroundColor: ["lightgreen", "grey"],
-                                    hoverBackgroundColor: ["lightgreen", "grey"],
-                                    borderWidth: 1
+                                    datasets: [
+                                        {
+                                            data: [
+                                                (c.totalCount / c.maxItemCount) * 100,
+                                                ((c.maxItemCount - c.totalCount) / c.maxItemCount) * 100
+                                            ],
+                                            needleValue: Math.max(0, c.maxItemCount === 0 ? 0 : (c.totalCount / c.maxItemCount) * 100 - 2),
+                                            backgroundColor: ["lightgreen", "grey"],
+                                            hoverBackgroundColor: ["lightgreen", "grey"],
+                                            borderWidth: 1
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                    }
-                    options={
-                        {
-                            layout: {
-                                padding: {
-                                    top: 31,
-                                    bottom: 3
+                            }
+                            options={
+                                {
+                                    layout: {
+                                        padding: {
+                                            top: 31,
+                                            bottom: 3
+                                        }
+                                    },
+                                    rotation: 1 * Math.PI,
+                                    circumference: 1 * Math.PI,
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        enabled: false
+                                    },
+                                    cutoutPercentage: 70,
+                                    animation: {
+                                        animateRotate: true,
+                                        animateScale: true,
+                                    },
                                 }
-                            },
-                            rotation: 1 * Math.PI,
-                            circumference: 1 * Math.PI,
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: false
-                            },
-                            cutoutPercentage: 70,
-                            animation: {
-                                animateRotate: true,
-                                animateScale: true,
-                            },
-                        }
-                    } />) : null }</Grid>,
-            (c) => (
-                <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
-                    <IconButton onClick={() => this.confirmDelete(c.cacheName)}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            )
+                            } />) : null}</Grid>,
+            // (c) => (
+            //     <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
+            //         <IconButton onClick={() => this.confirmDelete(c.cacheName)}>
+            //             <DeleteIcon />
+            //         </IconButton>
+            //     </Tooltip>
+            // )
         ]
         return result;
     };
     rowIdentifier = (r) => r.model;
 
-    canDeleteCaches = (selection) => true;
-
-    deleteCaches = () => {
-        this.setState({ openDialog: true })
-    };
 
     render() {
         const {
@@ -188,34 +176,30 @@ class CacheSearcher extends Component {
             fetchingCaches,
             fetchedCaches,
             cachesPageInfo,
-            caches
+            caches,
+            actions
         } = this.props
-        const { deleteModel } = this.state;
         let count = caches.length
 
         return (
-            <>
-                <ClearCacheDialog
-                    model={deleteModel}
-                    onConfirm={this.clearCaches}
-                    onCancel={(e) => this.setState({ deleteModel: null })}
-                />
-                <Searcher
-                    module="cache"
-                    fetchingItems={fetchingCaches}
-                    fetchedItems={fetchedCaches}
-                    itemsPageInfo={cachesPageInfo}
-                    items={caches}
-                    errorItems={errorCaches}
-                    tableTitle={formatMessageWithValues(intl, "cache", "cacheSummaries", { count })}
-                    headers={this.headers}
-                    withPagination={false}
-                    itemFormatters={this.itemFormatters}
-                    fetch={this.fetch}
-                    canFetch={false}
-                    rowIdentifier={this.rowIdentifier}
-                />
-            </>
+            <Searcher
+                module="cache"
+                fetchingItems={fetchingCaches}
+                fetchedItems={fetchedCaches}
+                itemsPageInfo={cachesPageInfo}
+                items={caches}
+                actions={actions}
+                errorItems={errorCaches}
+                tableTitle={formatMessageWithValues(intl, "cache", "cacheSummaries", { count })}
+                headers={this.headers}
+                withPagination={false}
+                withSelection="multiple"
+                itemFormatters={this.itemFormatters}
+                fetch={this.fetch}
+                canFetch={false}
+                rowIdentifier={this.rowIdentifier}
+            />
+
         )
     }
 }
