@@ -14,10 +14,10 @@ export function fetchCaches() {
     return graphql(payload, "CACHE_CACHES");
 }
 
-export function clearCaches(model, clientMutationLabel) {
+export function clearCaches(models, clientMutationLabel) {
     let mutation = formatMutation(
         "clearCache",
-        `model: "${model}"`,
+        `models: ["${models.join('","')}"]`,
         clientMutationLabel,
     );
     var requestedDateTime = new Date();

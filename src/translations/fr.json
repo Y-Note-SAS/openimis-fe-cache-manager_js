@@ -15,10 +15,12 @@
     "cache.model.default": "Default",
     "cache.deleteDialog.title": "Vider le cache {model}",
     "cache.model.deleteDialog.title": "Vider le cache",
-    "cache.model.deleteDialog.message": "Vider le cache du module ?",
+    "cache.model.deleteDialog.message": "Êtes-vous sûr de vouloir vider le cache de l'élément suivant:  {model} ? ",
+    "cache.model.deleteDialog.messageMutipleCacheName": "Êtes-vous sûr de vouloir vider le cache des éléments suivants: {models} ?",
     "cache.model.deleteDialog.yes.button": "OUI",
     "cache.deleteDialig.title": "Suppression du cache {model}",
     "cache.clearCache.tooltip": "Vider le cache du module",
     "cache.space.used": "Utilisé",
-    "cache.space.free": "Disponible"
+    "cache.space.free": "Disponible",
+    "cache.clearCache.emptyCache": "Vider cache"
 }
