@@ -107,7 +107,7 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
-                <Grid item xs={5}>
+                <Grid item xs={3}>
                     {c.maxItemCount > 0 ? (
                         <Doughnut
                             height="100%"
@@ -136,7 +136,7 @@ class CacheSearcher extends Component {
                                 {
                                     layout: {
                                         padding: {
-                                            top: 31,
+                                            top: 70,
                                             bottom: 3
                                         }
                                     },
