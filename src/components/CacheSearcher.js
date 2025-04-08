@@ -4,7 +4,8 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { IconButton, Tooltip, Grid } from "@material-ui/core";
+import { IconButton, Tooltip, Grid, Button } from "@material-ui/core";
+import WhatshotIcon from "@material-ui/icons/Whatshot";
 import { Delete as DeleteIcon } from "@material-ui/icons";
 import {
     formatMessageWithValues,
@@ -16,12 +17,14 @@ import {
 import _ from "lodash";
 import { Chart, Doughnut } from "react-chartjs-2";
 
-import { clearCaches, fetchCaches } from "../actions";
+import { clearCaches, fetchCaches, preheatCache } from "../actions";
 
 import { CACHE_MODEL } from "../constants";
 
 const styles = theme => ({
     page: theme.page,
+    primaryButton: theme.dialog.primaryButton,
+    secondaryButton: theme.dialog.secondaryButton,
 });
 
 class CacheSearcher extends Component {
@@ -110,12 +113,17 @@ class CacheSearcher extends Component {
         this.props.fetchCaches(prms)
     };
 
+    preheatCacheFetch = (model) => {
+        this.props.preheatCache(model, formatMessageWithValues(this.props.intl, "cache", "preheatCache.text", { model: model }),);
+    }
+
 
     headers = () => {
         var result = [
             "cacheSummaries.elements",
             "cacheSummaries.totalUse",
             "cacheSummaries.totalAvailable",
+            "",
             ""
         ];
         return result;
@@ -137,17 +145,17 @@ class CacheSearcher extends Component {
 
 
 
-    itemFormatters = () => {
+    itemFormatters = (classes) => {
         var result = [
             (c) => <Grid item xs={3}>{c.cacheName}</Grid>,
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
-                <Grid item xs={4}>
+                <Grid item xs={4} style={{ minHeight: "120px", minWidth: "120px" }}>
                     {c.maxItemCount > 0 ? (
                         <Doughnut
-                            height="100%"
-                            width="100%"
+                            height={120}
+                            width={120}
                             data={
                                 {
                                     labels: [
@@ -170,9 +178,11 @@ class CacheSearcher extends Component {
                             }
                             options={
                                 {
+                                    maintainAspectRatio: false,
+                                    responsive: true,
                                     layout: {
                                         padding: {
-                                            top: 20,
+                                            top: 45,
                                             bottom: 3
                                         }
                                     },
@@ -191,13 +201,19 @@ class CacheSearcher extends Component {
                                     },
                                 }
                             } />) : null}</Grid>,
-            // (c) => (
-            //     <Tooltip title={formatMessage(this.props.intl, "cache", "clearCache.tooltip")}>
-            //         <IconButton onClick={() => this.confirmDelete(c.cacheName)}>
-            //             <DeleteIcon />
-            //         </IconButton>
-            //     </Tooltip>
-            // )
+            (c) => 
+                <Grid item xs={5}>{
+                c.maxItemCount > 0 ? (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<WhatshotIcon />}
+                    onClick={() => this.preheatCacheFetch(c.cacheName)}
+                >
+                    {formatMessage(this.props.intl, "cache", "preheatCache.button.title")}
+                </Button>) : null
+            } </Grid>
+
         ]
         return result;
     };
@@ -247,11 +263,14 @@ const mapStateToProps = (state) => ({
     submittingMutation: state.cache.submittingMutation,
     mutation: state.cache.mutation,
     caches: state.cache.caches,
-    totalCacheModel: state.cache.totalCacheModel
+    totalCacheModel: state.cache.totalCacheModel,
+    preheatingCache: state.cache.preheatingCache,
+    preheatedCache: state.cache.preheatedCache,
+    errorPreheatCache: state.cache.errorPreheatCache,
 });
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ fetchCaches, clearCaches, journalize }, dispatch);
+    return bindActionCreators({ fetchCaches, clearCaches, preheatCache, journalize }, dispatch);
 };
 
 export default withModulesManager(
