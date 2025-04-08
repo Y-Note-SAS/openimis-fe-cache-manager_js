@@ -4,13 +4,13 @@ import {
     formatMutation,
 } from "@openimis/fe-core";
 
-export function fetchCaches() {
+export function fetchCaches(filters) {
     var projections = [
-        "maxItemCount",
         "totalCount",
+        "pageInfo { hasNextPage hasPreviousPage startCursor endCursor }",
         "edges { node { model cacheName totalCount maxItemCount}}",
     ];
-    const payload = formatQuery("cacheInfo",'', projections);
+    const payload = formatQuery("cacheInfo", filters , projections);
     return graphql(payload, "CACHE_CACHES");
 }
 

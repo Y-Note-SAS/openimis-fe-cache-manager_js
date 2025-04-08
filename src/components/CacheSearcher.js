@@ -35,6 +35,39 @@ class CacheSearcher extends Component {
         }
     }
 
+    filtersToQueryParams = (state) => {
+        let prms = Object.keys(state.filters)
+            .filter((f) => !!state.filters[f]["filter"])
+            .map((f) => state.filters[f]["filter"]);
+        let forced = this.forcedFilters();
+        let random = state.filters["random"];
+        if (forced.length > 0) {
+            prms.push(...forced.map((f) => f.filter));
+        }
+        if (!!random) {
+            prms.push(`first: ${random.value}`);
+            prms.push(`orderBy: ["dateClaimed", "?"]`);
+            this.setState({ random });
+        } else {
+            //prms.push(`orderBy: ["${state.orderBy}"]`);
+            this.setState({ random: null });
+        }
+        if (!forced.length && !random) {
+            if (!state.beforeCursor && !state.afterCursor) {
+                prms.push(`first: ${state.pageSize}`);
+            }
+            if (!!state.afterCursor) {
+                prms.push(`after: "${state.afterCursor}"`);
+                prms.push(`first: ${state.pageSize}`);
+            }
+            if (!!state.beforeCursor) {
+                prms.push(`before: "${state.beforeCursor}"`);
+                prms.push(`last: ${state.pageSize}`);
+            }
+        }
+        return prms;
+    };
+
     componentDidMount() {
         Chart.pluginService.register({
             afterDraw: (chart) => {
@@ -73,8 +106,8 @@ class CacheSearcher extends Component {
             this.fetch()
         }
     }
-    fetch = () => {
-        this.props.fetchCaches()
+    fetch = (prms) => {
+        this.props.fetchCaches(prms)
     };
 
 
@@ -87,6 +120,9 @@ class CacheSearcher extends Component {
         ];
         return result;
     };
+    forcedFilters() {
+        return !this.props.forcedFilters ? [] : [...this.props.forcedFilters.filter((f) => f.id !== "random")];
+    }
 
     clearCaches = () => {
         const model = this.state.deleteModel;
@@ -107,7 +143,7 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                     {c.maxItemCount > 0 ? (
                         <Doughnut
                             height="100%"
@@ -136,7 +172,7 @@ class CacheSearcher extends Component {
                                 {
                                     layout: {
                                         padding: {
-                                            top: 70,
+                                            top: 20,
                                             bottom: 3
                                         }
                                     },
@@ -180,7 +216,6 @@ class CacheSearcher extends Component {
             actions
         } = this.props
         let count = caches.length
-
         return (
             <Searcher
                 module="cache"
@@ -190,9 +225,9 @@ class CacheSearcher extends Component {
                 items={caches}
                 actions={actions}
                 errorItems={errorCaches}
+                filtersToQueryParams={this.filtersToQueryParams}
                 tableTitle={formatMessageWithValues(intl, "cache", "cacheSummaries", { count })}
                 headers={this.headers}
-                withPagination={false}
                 withSelection="multiple"
                 itemFormatters={this.itemFormatters}
                 fetch={this.fetch}
