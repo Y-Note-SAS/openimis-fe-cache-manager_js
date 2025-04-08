@@ -151,11 +151,11 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
             (c) =>
-                <Grid item xs={4}>
+                <Grid item xs={4} style={{ minHeight: "120px", minWidth: "120px" }}>
                     {c.maxItemCount > 0 ? (
                         <Doughnut
-                            height="100%"
-                            width="100%"
+                            height={120}
+                            width={120}
                             data={
                                 {
                                     labels: [
@@ -178,9 +178,11 @@ class CacheSearcher extends Component {
                             }
                             options={
                                 {
+                                    maintainAspectRatio: false,
+                                    responsive: true,
                                     layout: {
                                         padding: {
-                                            top: 20,
+                                            top: 45,
                                             bottom: 3
                                         }
                                     },
