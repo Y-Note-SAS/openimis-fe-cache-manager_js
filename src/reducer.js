@@ -18,6 +18,9 @@ function reducer(
         submittingMutation: false,
         mutation: {},
         totalCacheModel: {},
+        preheatingCache: false,
+        preheatedCache: false,
+        errorPreheatCache: null,
     },
     action
 ) {
@@ -45,6 +48,13 @@ function reducer(
                 fetchingCaches: false,
                 errorCaches: formatServerError(action.payload)
             };
+        case "PREHEAT_CACHE_MUTATION_REQ":
+            return dispatchMutationReq(state, action);
+        case "PREHEAT_CACHE_MUTATION_RESP":
+            return dispatchMutationResp(state, "preheatCache", action);
+        case "PREHEAT_CACHE_MUTATION_ERR":
+            return dispatchMutationErr(state, action);
+
         case "CACHE_MUTATION_REQ":
             return dispatchMutationReq(state, action);
         case "CACHE_MUTATION_ERR":

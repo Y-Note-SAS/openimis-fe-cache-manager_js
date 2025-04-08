@@ -1,6 +1,6 @@
 {
     "cache.menu.cachedashboard": "Gestion du cache",
-    "cache.mainMenu":"Cache",
+    "cache.mainMenu": "Cache",
     "cache.cacheSummaries": "{count} Élements trouvés",
     "cache.cacheSummaries.model": "Module",
     "cache.cacheSummaries.elements": "Elements",
@@ -22,5 +22,7 @@
     "cache.clearCache.tooltip": "Vider le cache du module",
     "cache.space.used": "Utilisé",
     "cache.space.free": "Disponible",
+    "cache.preheatCache.text": "Préchauffer le cache de {model}",
+    "cache.preheatCache.button.title": "Préchauffer le cache",
     "cache.clearCache.emptyCache": "Vider cache"
 }
