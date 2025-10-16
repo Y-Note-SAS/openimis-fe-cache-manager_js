@@ -182,7 +182,7 @@ class CacheSearcher extends Component {
                                     responsive: true,
                                     layout: {
                                         padding: {
-                                            top: 45,
+                                            top: 20,
                                             bottom: 3
                                         }
                                     },
@@ -202,11 +202,9 @@ class CacheSearcher extends Component {
                                 }
                             } />) : null}</Grid>,
             (c) => 
-                <Grid item xs={5}>{
+                <Grid item xs={1}>{
                 c.maxItemCount > 0 ? (
                 <Button
-                    variant="contained"
-                    color="primary"
                     startIcon={<WhatshotIcon />}
                     onClick={() => this.preheatCacheFetch(c.cacheName)}
                 >
@@ -231,7 +229,7 @@ class CacheSearcher extends Component {
             caches,
             actions
         } = this.props
-        let count = caches.length
+        let count = cachesPageInfo.totalCount;
         return (
             <Searcher
                 module="cache"
