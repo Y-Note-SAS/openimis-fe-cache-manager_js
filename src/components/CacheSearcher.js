@@ -31,7 +31,7 @@ class CacheSearcher extends Component {
 
     constructor(props) {
         super(props);
-
+        this.searcherState = null;
         this.state = {
             deleteModel: null,
             totalStorage: []
@@ -39,6 +39,7 @@ class CacheSearcher extends Component {
     }
 
     filtersToQueryParams = (state) => {
+        this.searcherState = state;
         let prms = Object.keys(state.filters)
             .filter((f) => !!state.filters[f]["filter"])
             .map((f) => state.filters[f]["filter"]);
@@ -50,10 +51,8 @@ class CacheSearcher extends Component {
         if (!!random) {
             prms.push(`first: ${random.value}`);
             prms.push(`orderBy: ["dateClaimed", "?"]`);
-            this.setState({ random });
         } else {
             //prms.push(`orderBy: ["${state.orderBy}"]`);
-            this.setState({ random: null });
         }
         if (!forced.length && !random) {
             if (!state.beforeCursor && !state.afterCursor) {
@@ -104,9 +103,18 @@ class CacheSearcher extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);
-            this.fetch()
+        const mutationFinished = prevProps.submittingMutation && !this.props.submittingMutation;
+        const preheatFinished = prevProps.preheatingCache && !this.props.preheatingCache;
+
+        if (mutationFinished || preheatFinished) {
+            if (mutationFinished) {
+                this.props.journalize(this.props.mutation);
+            }
+            if (this.searcherState) {
+                this.fetch(this.filtersToQueryParams(this.searcherState));
+            } else {
+                this.fetch();
+            }
         }
     }
     fetch = (prms) => {
