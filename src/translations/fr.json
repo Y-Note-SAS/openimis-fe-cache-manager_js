@@ -23,6 +23,6 @@
     "cache.space.used": "Utilisé",
     "cache.space.free": "Disponible",
     "cache.preheatCache.text": "Préchauffer le cache de {model}",
-    "cache.preheatCache.button.title": "Préchauffer le cache",
+    "cache.preheatCache.button.title": "Charger",
     "cache.clearCache.emptyCache": "Vider cache"
 }
