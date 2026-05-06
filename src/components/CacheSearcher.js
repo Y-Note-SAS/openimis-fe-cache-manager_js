@@ -131,8 +131,9 @@ class CacheSearcher extends Component {
             "cacheSummaries.elements",
             "cacheSummaries.totalUse",
             "cacheSummaries.totalAvailable",
+            "cacheSummaries.usageRate",
             "",
-            ""
+            // ""
         ];
         return result;
     };
@@ -158,6 +159,10 @@ class CacheSearcher extends Component {
             (c) => <Grid item xs={3}>{c.cacheName}</Grid>,
             (c) => <Grid item xs={4}>{c.totalCount}</Grid>,
             (c) => <Grid item xs={4}>{c.maxItemCount}</Grid>,
+            (c) => {
+                const usageRatio = c.maxItemCount > 0 ? (c.totalCount / c.maxItemCount) * 100 : 0;
+                return <Grid item xs={2}>{`${usageRatio.toFixed(1)}%`}</Grid>;
+            },
             (c) =>
                 <Grid item xs={4} style={{ minHeight: "120px", minWidth: "120px" }}>
                     {c.maxItemCount > 0 ? (
@@ -209,16 +214,16 @@ class CacheSearcher extends Component {
                                     },
                                 }
                             } />) : null}</Grid>,
-            (c) => 
-                <Grid item xs={1}>{
-                c.maxItemCount > 0 ? (
-                <Button
-                    startIcon={<WhatshotIcon />}
-                    onClick={() => this.preheatCacheFetch(c.cacheName)}
-                >
-                    {formatMessage(this.props.intl, "cache", "preheatCache.button.title")}
-                </Button>) : null
-            } </Grid>
+            // (c) => 
+            //     <Grid item xs={1}>{
+            //     c.maxItemCount > 0 ? (
+            //     <Button
+            //         startIcon={<WhatshotIcon />}
+            //         onClick={() => this.preheatCacheFetch(c.cacheName)}
+            //     >
+            //         {formatMessage(this.props.intl, "cache", "preheatCache.button.title")}
+            //     </Button>) : null
+            // } </Grid>
 
         ]
         return result;
